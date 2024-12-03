@@ -1,5 +1,5 @@
 streamlit==1.39.0
-openai==1.52.2
+openai==1.55.3
 uuid==1.30
 pyPDF2==3.0.1
 fitz==0.0.1.dev2
