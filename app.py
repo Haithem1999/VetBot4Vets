@@ -113,20 +113,6 @@ st.markdown("""
             padding: 0.5rem 1rem;
         }
 
-        /* Style the entire app's background */
-        body {
-            background-color: #f0f4f8; /* Minimalistic greyish-blue */
-        }
-    
-        /* Style the Streamlit container background */
-        .stApp {
-            background-color: #f0f4f8; /* Same greyish-blue for consistency */
-        }
-           /* App container styling */
-        .stApp {
-            background-color: #f0f4f8; /* Background for the app container */
-            padding: 10px; /* Optional: add some spacing around */
-        }
     </style>
 """, unsafe_allow_html=True)
 
