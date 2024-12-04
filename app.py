@@ -6,6 +6,77 @@ import json
 from PyPDF2 import PdfReader
 from docx import Document
 
+
+
+# Set page configuration for a clean, professional look
+st.set_page_config(
+    page_title="VetExpert Chat",
+    page_icon="🐾",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+# Custom CSS for minimal, professional styling
+st.markdown("""
+    <style>
+        /* Main content styling */
+        .main {
+            padding: 2rem;
+        }
+        
+        /* Header styling */
+        .stTitle {
+            color: #2c3e50;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        
+        /* Chat message styling */
+        .stChatMessage {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        /* File uploader styling */
+        .stFileUploader {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        /* Button styling */
+        .stButton>button {
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+            border: none;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .stButton>button:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Sidebar styling */
+        .css-1d391kg {
+            background-color: #f8f9fa;
+            padding: 1rem;
+        }
+        
+        /* Chat input styling */
+        .stTextInput>div>div>input {
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            padding: 0.5rem 1rem;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 # Initialize conversation history in session state if not present
 if 'conversation_history' not in st.session_state:
     st.session_state.conversation_history = {}
