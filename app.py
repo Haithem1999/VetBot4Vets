@@ -112,6 +112,16 @@ st.markdown("""
             border: 1px solid #e0e0e0;
             padding: 0.5rem 1rem;
         }
+
+        /* Style the entire app's background */
+        body {
+            background-color: #f0f4f8; /* Minimalistic greyish-blue */
+        }
+    
+        /* Style the Streamlit container background */
+        .stApp {
+            background-color: #f0f4f8; /* Same greyish-blue for consistency */
+        }
     </style>
 """, unsafe_allow_html=True)
 
