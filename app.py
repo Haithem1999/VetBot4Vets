@@ -18,11 +18,11 @@ st.set_page_config(
 )
 # Center the title
 st.markdown("<h1 style='text-align: center;'>Chatbot For Vet Experts 🐾</h1>", unsafe_allow_html=True)
+st.markdown("<h4 style='text-align: center;'>elcome to the Vetbot for Vet Experts and Professionals</h4>", unsafe_allow_html=True)
+
 
 
 # Custom CSS for minimal, professional styling
-
-st.markdown("<h1 style='text-align: center;'>Chatbot For Vet Experts 🐾</h1>", unsafe_allow_html=True)
 
 st.markdown("""
     <style>
@@ -133,10 +133,6 @@ if 'messages' not in st.session_state:
 # Set up the OpenAI API key
 api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=api_key)
-
-# Streamlit app
-st.title("Chatbot For Vet Experts")
-st.write("Welcome to the Vetbot for Vet Experts and Professionals")
 
 
 # Store uploaded documents in session state
