@@ -16,8 +16,14 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded"
 )
+# Center the title
+st.markdown("<h1 style='text-align: center;'>Chatbot For Vet Experts 🐾</h1>", unsafe_allow_html=True)
+
 
 # Custom CSS for minimal, professional styling
+
+st.markdown("<h1 style='text-align: center;'>Chatbot For Vet Experts 🐾</h1>", unsafe_allow_html=True)
+
 st.markdown("""
     <style>
         /* Main content styling */
@@ -68,26 +74,21 @@ st.markdown("""
             background-color: #f8f9fa;
             padding: 1rem;
         }
+            
         /* Download button styling */
         .stDownloadButton>button {
-            background-color: #27ae60;
+            background-color: #3498db !important;
             color: white;
             border-radius: 4px;
             border: none;
             padding: 0.5rem 1rem;
             transition: background-color 0.3s;
-            width: 100%;
-            margin: 1rem 0;
-        }
+    }
+    
+    .stDownloadButton>button:hover {
+        background-color: #2980b9 !important;
+    }
         
-        .stDownloadButton>button:hover {
-            background-color: #219a52;
-        }
-
-        /* Title and subtitle styling */
-        .stTitle, .stMarkdown {
-            text-align: center !important;
-        }
 
         .stTitle>h1 {
             font-size: 2.5rem;
@@ -134,7 +135,7 @@ api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=api_key)
 
 # Streamlit app
-st.title("Chatbot For Vet Experts 🐾")
+st.title("Chatbot For Vet Experts")
 st.write("Welcome to the Vetbot for Vet Experts and Professionals")
 
 
