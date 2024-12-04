@@ -18,7 +18,7 @@ st.set_page_config(
 )
 # Center the title
 st.markdown("<h1 style='text-align: center;'>Chatbot For Vet Experts 🐾</h1>", unsafe_allow_html=True)
-st.markdown("<h5 style='text-align: center;'>Welcome to the Vetbot for Vet Experts and Professionals</h5>", unsafe_allow_html=True)
+st.markdown("<h6 style='text-align: center;'>Welcome to the Vetbot for Vet Experts and Professionals</h6>", unsafe_allow_html=True)
 
 
 
