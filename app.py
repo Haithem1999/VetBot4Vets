@@ -122,6 +122,11 @@ st.markdown("""
         .stApp {
             background-color: #f0f4f8; /* Same greyish-blue for consistency */
         }
+           /* App container styling */
+        .stApp {
+            background-color: #f0f4f8; /* Background for the app container */
+            padding: 10px; /* Optional: add some spacing around */
+        }
     </style>
 """, unsafe_allow_html=True)
 
