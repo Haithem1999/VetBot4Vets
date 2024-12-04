@@ -1,3 +1,5 @@
+
+
 import streamlit as st
 import os
 from openai import OpenAI
@@ -5,7 +7,6 @@ import uuid
 import json
 from PyPDF2 import PdfReader
 from docx import Document
-
 
 
 # Set page configuration for a clean, professional look
@@ -67,6 +68,42 @@ st.markdown("""
             background-color: #f8f9fa;
             padding: 1rem;
         }
+        /* Download button styling */
+        .stDownloadButton>button {
+            background-color: #27ae60;
+            color: white;
+            border-radius: 4px;
+            border: none;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin: 1rem 0;
+        }
+        
+        .stDownloadButton>button:hover {
+            background-color: #219a52;
+        }
+
+        /* Title and subtitle styling */
+        .stTitle, .stMarkdown {
+            text-align: center !important;
+        }
+
+        .stTitle>h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+
+        .stMarkdown>p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            font-family: 'Helvetica Neue', sans-serif;
+        }
         
         /* Chat input styling */
         .stTextInput>div>div>input {
@@ -76,6 +113,7 @@ st.markdown("""
         }
     </style>
 """, unsafe_allow_html=True)
+
 
 # Initialize conversation history in session state if not present
 if 'conversation_history' not in st.session_state:
@@ -96,7 +134,7 @@ api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=api_key)
 
 # Streamlit app
-st.title("Chatbot For Vet Experts")
+st.title("Chatbot For Vet Experts 🐾")
 st.write("Welcome to the Vetbot for Vet Experts and Professionals")
 
 
@@ -328,3 +366,4 @@ if prompt := st.chat_input("You:"):
     # Save the updated conversation
     conversations[st.session_state.session_id] = st.session_state.messages
     save_conversations(conversations)
+    
