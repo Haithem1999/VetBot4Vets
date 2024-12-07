@@ -208,7 +208,7 @@ def generate_response(prompt):
 
     Here are your key responsibilities:
     1. Detailed and Comprehensive Responses: Always provide thorough, step-by-step answers. Include all necessary details, explanations, and the rationale behind your suggestions.
-    2. Follow-Up Questions: After every response, ask a relevant follow-up question to encourage further discussion, gather more details, or explore related topics. Examples:
+    2. After each response you give, always ask a follow-up question to keep the conversation engaging with the user. These questions should be related to the answer given or can be helpful follow-ups that you think might benefit the user.Examples:
        - "Would you like to explore additional diagnostic possibilities?"
        - "Do you need further clarification on this treatment approach?"
        - "Is there anything else you'd like to discuss about this case?"
