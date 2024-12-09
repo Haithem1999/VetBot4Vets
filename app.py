@@ -1,3 +1,5 @@
+
+
 import streamlit as st
 import os
 from openai import OpenAI
@@ -5,66 +7,203 @@ import uuid
 import json 
 from PyPDF2 import PdfReader
 from docx import Document
-from PIL import Image
 
-# Set page configuration
+
+# Set page configuration for a clean, professional look
 st.set_page_config(
     page_title="VetExpert Chat",
     page_icon="🐾",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# Centered Title and Subtitle
+# Center the title
 st.markdown("<h1 style='text-align: center;'>Chatbot For Vet Experts 🐾</h1>", unsafe_allow_html=True)
 st.markdown("<h6 style='text-align: center;'>Welcome to the Vetbot for Vet Experts and Professionals</h6>", unsafe_allow_html=True)
 
-# Initialize session state
+
+
+# Custom CSS for minimal, professional styling
+
+st.markdown("""
+    <style>
+        /* Main content styling */
+        .main {
+            padding: 2rem;
+        }
+        
+        /* Header styling */
+        .stTitle {
+            color: #2c3e50;
+            font-family: 'Helvetica Neue', sans-serif;
+            font-weight: 500;
+            margin-bottom: 2rem;
+        }
+        
+        /* Chat message styling */
+        .stChatMessage {
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 0.5rem 0;
+        }
+        
+        /* File uploader styling */
+        .stFileUploader {
+            border: 2px dashed #e0e0e0;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+        }
+        
+        /* Button styling */
+        .stButton>button {
+            background-color: #3498db;
+            color: white;
+            border-radius: 4px;
+            border: none;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s;
+        }
+        
+        .stButton>button:hover {
+            background-color: #2980b9;
+        }
+        
+        /* Sidebar styling */
+        .css-1d391kg {
+            background-color: #f8f9fa;
+            padding: 1rem;
+        }
+            
+        /* Download button styling */
+        .stDownloadButton>button {
+            background-color: #3498db !important;
+            color: white;
+            border-radius: 4px;
+            border: none;
+            padding: 0.5rem 1rem;
+            transition: background-color 0.3s;
+    }
+    
+    .stDownloadButton>button:hover {
+        background-color: #2980b9 !important;
+    }
+        
+
+        .stTitle>h1 {
+            font-size: 2.5rem;
+            color: #2c3e50;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+
+        .stMarkdown>p {
+            font-size: 1.2rem;
+            color: #7f8c8d;
+            font-weight: 400;
+            margin-bottom: 2rem;
+            font-family: 'Helvetica Neue', sans-serif;
+        }
+        
+        /* Chat input styling */
+        .stTextInput>div>div>input {
+            border-radius: 20px;
+            border: 1px solid #e0e0e0;
+            padding: 0.5rem 1rem;
+        }
+
+    </style>
+""", unsafe_allow_html=True)
+
+
+# Initialize conversation history in session state if not present
+if 'conversation_history' not in st.session_state:
+    st.session_state.conversation_history = {}
+if 'current_conversation' not in st.session_state:
+    st.session_state.current_conversation = []
+if 'selected_conversation' not in st.session_state:
+    st.session_state.selected_conversation = None
+
+
+# Initialize session state for chat history
 if 'messages' not in st.session_state:
     st.session_state.messages = []
-if 'current_context' not in st.session_state:
-    st.session_state.current_context = ""
-if 'uploaded_file' not in st.session_state:
-    st.session_state.uploaded_file = None
-if 'session_id' not in st.session_state:
-    st.session_state.session_id = str(uuid.uuid4())
 
-# OpenAI API Key Setup
+
+# Set up the OpenAI API key
 api_key = st.secrets["OPENAI_API_KEY"]
 client = OpenAI(api_key=api_key)
 
-# File Upload Section
-uploaded_file = st.file_uploader("Upload a file (PDF, DOCX, TXT, PNG, JPG)", type=["pdf", "docx", "txt", "png", "jpg", "jpeg"])
 
+# Store uploaded documents in session state
+if 'documents' not in st.session_state:
+    st.session_state.documents = {}
+    st.session_state.current_context = ""  # Initialize as empty string
+    st.session_state.uploaded_file = None  # Initialize uploaded file as None
+
+# Create a unique session ID for the current user
+if 'session_id' not in st.session_state:
+    st.session_state.session_id = str(uuid.uuid4())
+
+# File upload
+uploaded_file = st.file_uploader("Upload a file", type=["pdf", "docx", "txt"], key="file_uploader")
+
+# If a file is uploaded, process it and store its content
 if uploaded_file:
-    st.session_state.uploaded_file = uploaded_file
-    file_type = uploaded_file.type
-
-    if file_type == "application/pdf":
+    st.session_state.uploaded_file = uploaded_file  # Store uploaded file in session state
+    if uploaded_file.type == "application/pdf":
         pdf_reader = PdfReader(uploaded_file)
         text = "".join([page.extract_text() for page in pdf_reader.pages])
-        st.session_state.current_context = text
-        st.success("PDF content loaded successfully.")
-
-    elif file_type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
+        st.session_state.current_context = text  # Store parsed text for chatbot use
+    elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.wordprocessingml.document":
         doc = Document(uploaded_file)
         text = "\n".join([para.text for para in doc.paragraphs])
-        st.session_state.current_context = text
-        st.success("Word document content loaded successfully.")
-
-    elif file_type == "text/plain":
+        st.session_state.current_context = text  # Store parsed text for chatbot use
+    elif uploaded_file.type == "text/plain":
         text = uploaded_file.read().decode("utf-8")
-        st.session_state.current_context = text
-        st.success("Text file content loaded successfully.")
+        st.session_state.current_context = text  # Store parsed text for chatbot use
+    else:
+        text = "Unsupported file format."
 
-    elif file_type in ["image/png", "image/jpeg", "image/jpg"]:
-        image = Image.open(uploaded_file)
-        st.session_state.current_context = image
-        st.image(image, caption="Uploaded Image", use_column_width=True)
-        st.success("Image uploaded successfully for analysis.")
+# Initialize toggle state in session state
+if "show_content" not in st.session_state:
+    st.session_state.show_content = False
+
+# Layout for buttons in a single row using container
+with st.container():
+    col1, spacer, col2 = st.columns([1, 1.77, 1])  # Equal-width columns to align buttons
+
+    with col1:
+        # Toggle button to display or hide content
+        if st.button(" 📝 Show/Hide File Content", key="show_hide_button"):
+            st.session_state.show_content = not st.session_state.show_content
+
+    with col2:
+        # Download button for conversation
+        st.download_button(
+            " ⬇️ Download Conversation",
+            data=json.dumps(st.session_state.messages, indent=2),
+            file_name= f"Conversation_{st.session_state.session_id[:7]}.json",
+            mime="application/json", 
+            key="download_button"
+        )
+
+    
+# Display or hide content based on the toggle state
+if uploaded_file and st.session_state.show_content:
+    st.write(text)
+
+
+# Add space between buttons and chat section
+st.write("")  
+st.write("") 
+st.write("") 
+
 
 # Function to generate response
 def generate_response(prompt):
+    # Define the system prompt
     system_prompt = """You are an advanced veterinary assistant designed to assist veterinary professionals, including doctors and experts, with diagnosing, analyzing, and managing complex medical cases. Your primary focus is on providing well-detailed, evidence-based information and engaging in meaningful discussions to support clinical decision-making.
 
     Here are your key responsibilities:
@@ -78,61 +217,91 @@ def generate_response(prompt):
     8. Be consistent in your responses in terms of style and structure. 
     
     Communicate in English by default, using advanced medical terminology. You need to switch to the language used by the user if needed, while maintaining clarity and scientific rigor.
+
     """
 
-    messages = [{"role": "system", "content": system_prompt}] + st.session_state.messages
-
-    # Handle image-based context if uploaded
-    if isinstance(st.session_state.current_context, Image.Image):
-        response = client.chat.completions.create(
-            model="gpt-4-vision-preview",
-            messages=messages + [{"role": "user", "content": prompt}],
-            max_tokens=500,
-            temperature=0.5,
-            images=[{"image": st.session_state.current_context}]
-        )
+    if st.session_state.current_context:
+        user_prompt = f"{prompt}\n\nDocument content for reference: {st.session_state.current_context}"
     else:
-        # Include document content in response if available
         user_prompt = prompt
-        if st.session_state.current_context:
-            user_prompt += f"\n\nDocument content for reference:\n{st.session_state.current_context}"
 
-        response = client.chat.completions.create(
-            model="ft:gpt-4o-mini-2024-07-18:personal:vetexpert:AcT2W57z",
-            messages=messages + [{"role": "user", "content": user_prompt}],
-            max_tokens=500,
-            temperature=0.5
-        )
+    response = client.chat.completions.create(
+        #model="ft:gpt-4o-mini-2024-07-18:personal::ATCwbTAA",
+        #model = "ft:gpt-4o-mini-2024-07-18:personal::Aa7eN5z8",
+        model = "ft:gpt-4o-mini-2024-07-18:personal::Ac9ORuFZ",
+        messages=[{"role": "system", "content": system_prompt}] + st.session_state.messages + [{"role": "user", "content": user_prompt}],
+    )
+    
     return response.choices[0].message.content
 
-# Sidebar for managing conversations
-st.sidebar.title("Manage Conversations")
+# Load previous conversations from a file
+def load_conversations():
+    try:
+        with open('conversations.json', 'r') as f:
+            return json.load(f)
+    except FileNotFoundError:
+        return {}
 
-if st.sidebar.button("➕ New Conversation"):
-    st.session_state.messages = []
-    st.session_state.session_id = str(uuid.uuid4())
-    st.session_state.current_context = ""
-    st.session_state.uploaded_file = None
-    st.rerun()
+# Save conversations to a file
+def save_conversations(conversations):
+    with open('conversations.json', 'w') as f:
+        json.dump(conversations, f)
 
-# Conversation History (Placeholder for future extensions)
-st.sidebar.title("Conversation History")
-st.sidebar.write("This section can be expanded for saved conversations.")
+# Load previous conversations
+conversations = load_conversations()
+
+# Load previous messages for this session, if any
+if st.session_state.session_id in conversations:
+    st.session_state.messages = conversations[st.session_state.session_id]
 
 # Display chat history
 for message in st.session_state.messages:
     with st.chat_message(message["role"]):
         st.markdown(message["content"])
 
-# Chat Input and Response
+# Initialize sidebar for conversation history
+st.sidebar.title("Add a New Conversation")
+
+# Create a "New Conversation" button
+if st.sidebar.button("➕ New Conversation"):
+    # Clear the current conversation
+    st.session_state.messages = []
+    # Generate new session ID
+    st.session_state.session_id = str(uuid.uuid4())
+    # Clear current context and uploaded file when starting a new conversation
+    st.session_state.current_context = ""  # Clear document content
+    st.session_state.uploaded_file = None  # Clear uploaded file
+    st.rerun()
+    
+st.sidebar.write("")
+
+st.sidebar.title("Conversation History")
+
+# Display past conversations in sidebar
+for session_id, msgs in conversations.items():
+    if msgs:  # Only show sessions that have messages
+        # Get first user message as title, or use session ID if no messages
+        # title = next((msg["content"][:30] + "..." for msg in msgs if msg["role"] == "user"), f"Conversation {session_id[:8]}")
+        title = f"Conversation_{session_id[:7]}"
+        if st.sidebar.button(title, key=session_id):
+            st.session_state.session_id = session_id
+            st.session_state.messages = msgs
+            st.rerun()
+
+# Chat input
 if prompt := st.chat_input("You:"):
     st.session_state.messages.append({"role": "user", "content": prompt})
     with st.chat_message("user"):
         st.markdown(prompt)
-
+    
     with st.chat_message("assistant"):
         message_placeholder = st.empty()
         full_response = generate_response(prompt)
         message_placeholder.markdown(full_response)
-
+    
     st.session_state.messages.append({"role": "assistant", "content": full_response})
+    
+    # Save the updated conversation
+    conversations[st.session_state.session_id] = st.session_state.messages
+    save_conversations(conversations)
+    
